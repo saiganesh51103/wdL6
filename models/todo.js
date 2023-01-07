@@ -11,6 +11,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
 
+    static addTodo({ title, dueDate }) {
+      return this.create({ title: title, dueDate: dueDate, completed: false });
+    }
+
+    static getTodos() {
+      return this.findAll();
+    }
+
+    // markAsCompleted() {
+    //   return this.update({ completed: true });
+    // }
     static async overdue() {
       return await Todo.findAll({
         where: {
@@ -20,7 +31,6 @@ module.exports = (sequelize, DataTypes) => {
         order: [["id", "ASC"]],
       });
     }
-
     static async dueToday() {
       return await Todo.findAll({
         where: {
@@ -30,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
         order: [["id", "ASC"]],
       });
     }
-
     static async dueLater() {
       return await Todo.findAll({
         where: {
@@ -41,46 +50,22 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    static async dueLater() {
+    static async completedTodos() {
       return await Todo.findAll({
-        where: {
-          dueDate: { [Op.gt]: new Date().toLocaleDateString("en-CA") },
-          completed: false,
-        },
-        order: [["id", "ASC"]],
+        where: { completed: true },
       });
-    }
-    static async completedTodo() {
-      return await Todo.findAll({
-        where: {
-          completed: true,
-        },
-      });
-    }
-
-    setCompletionStatus(completed) {
-      console.log(completed);
-      return this.update({ completed: completed });
-    }
-
-    static getTodos() {
-      return this.findAll();
-    }
-    static addTodo({ title, dueDate }) {
-      return this.create({ title: title, dueDate: dueDate, completed: false });
-    }
-    markAsCompleted() {
-      return this.update({ completed: true });
     }
     static async remove(id) {
       return this.destroy({
         where: {
-          id: id,
+          id,
         },
       });
     }
+    setCompletionStatus(completed) {
+      return this.update({ completed: completed });
+    }
   }
-
   Todo.init(
     {
       title: DataTypes.STRING,
